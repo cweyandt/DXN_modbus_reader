@@ -40,10 +40,10 @@ import configparser
 #---------------------------------------------------------------------------# 
 # configure the client logging
 #---------------------------------------------------------------------------# 
-import logging
-logging.basicConfig()
-log = logging.getLogger()
-log.setLevel(logging.INFO)
+# import logging
+# logging.basicConfig()
+# log = logging.getLogger()
+# log.setLevel(logging.INFO)
 
 
 class Get_Modbus_Data(object):
@@ -53,7 +53,7 @@ class Get_Modbus_Data(object):
 
 		try:
 			modbus_config = Config["modbus"]
-			self.IP_ADDRESS = modbus_config.get("IP_ADDRESS")
+			self.IP_ADDRESS = modbus_config.get("ip")
 			self.START_REGISTER = modbus_config.getint("BASE_ADDRESS")
 			self.NUM_REGISTERS = modbus_config.getint("NUM_REGISTERS")
 			self.UNIT_ID = modbus_config.getint("UNIT_ID")
@@ -62,7 +62,7 @@ class Get_Modbus_Data(object):
 			self.lengths = modbus_config.get("lengths").split(',')
 			# if 
 		except Exception as e:
-			self.logger.error("unexpected error while setting configuration from config_file=%s, error=%s"%(self.config_file, str(e)))
+			# self.logger.error("unexpected error while setting configuration from config_file=%s, error=%s"%(self.config_file, str(e)))
 			raise e
 
 	def initialize_modbus(self):
@@ -85,8 +85,3 @@ class Get_Modbus_Data(object):
 
 	def kill_modbus(self):
 		self.client.close()
-
-obj = Get_Modbus_Data()
-obj.initialize_modbus()
-obj.get_data()
-obj.kill_modbus()
