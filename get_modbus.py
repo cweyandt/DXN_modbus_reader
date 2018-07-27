@@ -80,7 +80,7 @@ class Get_Modbus_Data(object):
 				byteorder=Endian.Big,
 				wordorder=Endian.Little)
 			output[self.names[i]] = dec.decode_32bit_float()
-		print(output)
+		# print(output)
 		return output
 
 	def kill_modbus(self):
