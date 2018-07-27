@@ -33,6 +33,13 @@ class Influx_Database_class(object):
             self.host = db_config.get("host")
             self.port = db_config.get("port")
             self.database_name = db_config.get("database")
+            # self.username = db_config.get("username")
+            # self.password = db_config.get("password")
+            # self.client = InfluxDBClient(host=self.host,
+            #                             port=self.port,
+            #                             username=self.username, 
+            #                             password=self.password,
+            #                             database=self.database_name)
             self.influx_obj=Influx_Dataframe_Client(config_file="config.ini", db_section="local_database_config")
             self.client=self.influx_obj.expose_influx_client()
             self.measurement_name = db_config.get("measurement_name")
@@ -57,11 +64,12 @@ class Influx_Database_class(object):
                         "fields": fields
                     }
                 ]
-        self.client.write_points(pushData)
+        self.influx_obj.t(json=pushData, database=self.database_name)
+        # self.client.write_points(pushData)
 
     def push_df_to_db(self, df):
         self.influx_obj.write_data(data=df,
-            tags=self.tag_values,
+            tags=self.tag_names,
             fields=self.field_names,
             measurement=self.measurement_name,
             database=self.database_name)
