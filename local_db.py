@@ -26,21 +26,16 @@ class Influx_Database_class(object):
         try:
             self.ip = Config.get("modbus", "ip")
             if config_type == "local":
+                db_config_name = "local_database_config"
                 db_config = Config["local_database_config"]
             else:
+                db_config_name = "remote_database_config"
                 db_config = Config["remote_database_config"]
 
             self.host = db_config.get("host")
             self.port = db_config.get("port")
             self.database_name = db_config.get("database")
-            # self.username = db_config.get("username")
-            # self.password = db_config.get("password")
-            # self.client = InfluxDBClient(host=self.host,
-            #                             port=self.port,
-            #                             username=self.username, 
-            #                             password=self.password,
-            #                             database=self.database_name)
-            self.influx_obj=Influx_Dataframe_Client(config_file="config.ini", db_section="local_database_config")
+            self.influx_obj=Influx_Dataframe_Client(config_file="config.ini", db_section=db_config_name)
             self.client=self.influx_obj.expose_influx_client()
             self.measurement_name = db_config.get("measurement_name")
             self.sensor_id = db_config.get("sensor_id")
@@ -64,8 +59,7 @@ class Influx_Database_class(object):
                         "fields": fields
                     }
                 ]
-        self.influx_obj.t(json=pushData, database=self.database_name)
-        # self.client.write_points(pushData)
+        self.influx_obj.post_to_DB(json=pushData, database=self.database_name)
 
     def push_df_to_db(self, df):
         self.influx_obj.write_data(data=df,
@@ -74,15 +68,19 @@ class Influx_Database_class(object):
             measurement=self.measurement_name,
             database=self.database_name)
 
+    # Enter time in seconds
     def read_from_db(self, time_now=None):
         if time_now == None:
             time_now=time.time()*1000000000
 
-        return self.influx_obj.specific_query(database=self.database_name,
+        # print("end_time = ", time_now)
+        df = self.influx_obj.specific_query(database=self.database_name,
                 measurement=self.measurement_name,
-                end_time=int(time.time()*1000000000)
+                end_time=int(time_now*1000000000)
             )
+        return df
 
+    # Enter time in seconds
     def delete_from_db(self, time_now=None):
         if time_now == None:
             time_now=time.time()*1000000000

@@ -192,7 +192,7 @@ class Influx_Dataframe_Client(object):
         the columns in the dataframe that are going to be included in the tags
         and fields dictionary
         '''
-        # print(data.head())
+
         data['measurement'] = measurement
         data["tags"] = data.loc[:,tags].apply(transform_to_dict, tags=tags, axis=1)
         data["fields"] = data.loc[:,fields].apply(transform_to_dict, tags=fields, axis=1)
@@ -391,7 +391,6 @@ class Influx_Dataframe_Client(object):
         if (group_string != ""):
             query_string = query_string + group_string
 
-        # print(query_string)
         df = self.df_client.query(query_string, database=self.database,chunked=True, chunk_size=256)
 
         if (measurement in df):
